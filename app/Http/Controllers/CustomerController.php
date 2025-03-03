@@ -35,14 +35,12 @@ class CustomerController extends Controller
     public function show($id)
     {
         $lead = Lead::findOrFail($id);
-        $products = Product::whereHas('customer', function ($query) use ($id) {
-            $query->where('lead_id', $id);
-        })->get();
+        $customers = Customer::where('lead_id', $lead->id)->get();
 
         $data = [
             'title' => 'Customer',
             'lead' => $lead,
-            'products' => $products,
+            'customers' => $customers,
         ];
 
         return view('dashboard.customer.detail', $data);

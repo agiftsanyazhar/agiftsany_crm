@@ -66,12 +66,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($products as $product)
+                            @foreach ($customers as $customer)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $product->name }}</td>
-                                    <td>{{ $product->description }}</td>
-                                    <td>Rp{{ number_format($product->price, 0, ',', '.') }}</td>
+                                    <td>{{ $customer->product->name }}</td>
+                                    <td>{{ $customer->product->description }}</td>
+                                    <td>Rp{{ number_format($customer->product->price, 0, ',', '.') }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
