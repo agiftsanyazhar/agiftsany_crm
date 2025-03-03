@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
+use App\Models\Lead;
 use App\Models\Product;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -88,6 +91,29 @@ class ProductController extends Controller
         } catch (Exception $e) {
             $status = 'danger';
             $message = 'Failed to delete: ' . $e->getMessage();
+        }
+
+        return redirect()->back()->with($status, $message);
+    }
+
+    public function buyProduct(Request $request, $id)
+    {
+        try {
+            $data = $request->validate([
+                'product_id' => 'required|exists:products,id',
+            ]);
+
+            $lead = Lead::where('user_id', Auth::user()->id)->first();
+
+            $data['lead_id'] = $lead->id;
+
+            Customer::create($data);
+
+            $status = 'success';
+            $message = 'Product successfully bought.';
+        } catch (Exception $e) {
+            $status = 'error';
+            $message = 'Failed to buy product: ' . $e->getMessage();
         }
 
         return redirect()->back()->with($status, $message);

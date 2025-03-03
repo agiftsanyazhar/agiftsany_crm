@@ -30,7 +30,7 @@
                                 <th>{{ __('Name') }}</th>
                                 <th>{{ __('Description') }}</th>
                                 <th>{{ __('Price') }}</th>
-                                @if (Auth::user()->role == 'admin')
+                                @if (Auth::user()->role == 'admin' || Auth::user()->role == 'customer')
                                     <th>
                                         {{ __('Action') }}
                                     </th>
@@ -57,6 +57,19 @@
                                                     <i class="bi bi-trash-fill"></i>
                                                 </button>
                                             </div>
+                                        </td>
+                                    @endif
+                                    @if (Auth::user()->role == 'customer')
+                                        <td>
+                                            <form action="{{ route('dashboard.product.buy-product', $product->id) }}" method="POST">
+                                                @csrf
+                                                @method('POST')
+                                                <div class="btn-group" role="group" aria-label="Basic example">
+                                                    <button type="submit" class="btn btn-success" title="Buy" name="product_id" value="{{ $product->id }}">
+                                                        <i class="bi bi-cart"></i>
+                                                    </button>
+                                                </div>
+                                            </form>
                                         </td>
                                     @endif
                                 </tr>

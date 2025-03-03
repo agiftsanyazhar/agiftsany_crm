@@ -22,6 +22,7 @@ Route::prefix('product')->name('product.')->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('index');
     Route::post('/store', [ProductController::class, 'store'])->name('store')->middleware('auth.admin');
     Route::post('/update', [ProductController::class, 'update'])->name('update')->middleware('auth.admin');
+    Route::post('/buy-product/{id}', [ProductController::class, 'buyProduct'])->name('buy-product');
     Route::get('/destroy/{id}', [ProductController::class, 'destroy'])->name('destroy')->middleware('auth.admin');
 });
 

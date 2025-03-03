@@ -27,23 +27,9 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $customer->lead->name }}</td>
                                     <td>
-                                        @if (Auth::user()->role == 'admin' || Auth::user()->role == 'manager')
-                                            <a href="{{ route('dashboard.customer.show', $customer->lead->id) }}" class="btn btn-primary text-white" title="Show">
-                                                <i class="bi bi-eye-fill"></i>
-                                            </a>
-                                        @endif
-                                        {{-- @if (Auth::user()->role == 'admin' || Auth::user()->role == 'manager')
-                                            <form action="{{ route('dashboard.project.update-status', $customer->id) }}" method="POST">
-                                                @csrf
-                                                @method('POST')
-                                                <button type="submit" class="btn btn-success" title="Complete" name="status" value="Completed">
-                                                    <i class="fas fa-check"></i> Complete
-                                                </button>
-                                                <button type="submit" class="btn btn-danger" title="Cancel" name="status" value="Canceled">
-                                                    <i class="fas fa-times"></i> Cancel
-                                                </button>
-                                            </form>
-                                        @endif --}}
+                                        <a href="{{ route('dashboard.customer.show', $customer->lead->id) }}" class="btn btn-primary text-white" title="Show">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             @endforeach

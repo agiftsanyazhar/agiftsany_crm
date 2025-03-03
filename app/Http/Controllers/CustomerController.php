@@ -17,7 +17,8 @@ class CustomerController extends Controller
         if (Auth::user()->role === 'admin' || Auth::user()->role === 'manager') {
             $customers = Customer::distinct()->select('lead_id')->get();
         } else {
-            $customers = Customer::where('user_id', Auth::user()->id)->get();
+            $lead = Lead::where('user_id', Auth::user()->id)->first();
+            $customers = Customer::distinct()->where('lead_id', $lead->id)->select('lead_id')->get();
         }
 
         $data = [

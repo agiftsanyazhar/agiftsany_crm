@@ -1,6 +1,6 @@
 <div class="sidebar-menu">
     <ul class="menu">
-        @if (Auth::user()->role == 'admin' || Auth::user()->role == 'manager')
+        @if (Auth::user()->role != 'customer')
             <li class="sidebar-item {{ request()->is('dashboard/lead') ? 'active' : '' }}">
                 <a href="{{ route('dashboard.lead.index') }}" class="sidebar-link">
                     <i class="bi bi-people-fill"></i>
