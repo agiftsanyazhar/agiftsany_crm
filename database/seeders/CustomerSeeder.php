@@ -13,13 +13,15 @@ class CustomerSeeder extends Seeder
      */
     public function run(): void
     {
-        $approvedLeads = Lead::where('status', 'approved')->count();
+        $approvedLeads = Lead::where('status', 'approved')->get();
 
-        for ($i = 1; $i <= 150; $i++) {
-            Customer::create([
-                'lead_id' => rand(1, $approvedLeads),
-                'product_id' => rand(1, 1000),
-            ]);
+        foreach ($approvedLeads as $lead) {
+            for ($i = 1; $i <= 5; $i++) {
+                Customer::create([
+                    'lead_id' => $lead->id,
+                    'product_id' => rand(1, 1000),
+                ]);
+            }
         }
     }
 }

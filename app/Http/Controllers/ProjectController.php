@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
-use App\Http\Requests\StoreProjectRequest;
-use App\Http\Requests\UpdateProjectRequest;
+use Exception;
+use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
@@ -13,54 +13,38 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        //
+        $projects = Project::whereHas('lead', function ($query) {
+            $query->where('status', 'approved');
+        })->get();
+
+        $data = [
+            'title' => 'Projects',
+            'projects' => $projects,
+        ];
+
+        return view('dashboard.project.index', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function updateStatus(Request $request, $id)
     {
-        //
-    }
+        try {
+            $project = Project::where('id', $id)->firstOrFail();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreProjectRequest $request)
-    {
-        //
-    }
+            $newStatus = $request->input('status');
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Project $project)
-    {
-        //
-    }
+            if (!in_array($newStatus, ['pending', 'approved', 'rejected'])) {
+                return redirect()->back()->with('error', 'Invalid status.');
+            }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Project $project)
-    {
-        //
-    }
+            $project->update(['status' => $newStatus]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateProjectRequest $request, Project $project)
-    {
-        //
-    }
+            $status = 'success';
+            $message = 'Project status successfully updated.';
+        } catch (Exception $e) {
+            $status = 'error';
+            $message = 'Failed to update status: ' . $e->getMessage();
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Project $project)
-    {
-        //
+        return redirect()->back()->with($status, $message);
     }
 }

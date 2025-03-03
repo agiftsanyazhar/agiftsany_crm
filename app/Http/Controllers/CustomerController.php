@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
-use App\Http\Requests\StoreCustomerRequest;
-use App\Http\Requests\UpdateCustomerRequest;
+use App\Models\Lead;
+use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
@@ -13,54 +14,36 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        //
-    }
+        if (Auth::user()->role === 'admin' || Auth::user()->role === 'manager') {
+            $customers = Customer::distinct()->select('lead_id')->get();
+        } else {
+            $customers = Customer::where('user_id', Auth::user()->id)->get();
+        }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        $data = [
+            'title' => 'Customers',
+            'customers' => $customers,
+        ];
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreCustomerRequest $request)
-    {
-        //
+        return view('dashboard.customer.index', $data);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Customer $customer)
+    public function show($id)
     {
-        //
-    }
+        $lead = Lead::findOrFail($id);
+        $products = Product::whereHas('customer', function ($query) use ($id) {
+            $query->where('lead_id', $id);
+        })->get();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Customer $customer)
-    {
-        //
-    }
+        $data = [
+            'title' => 'Customer',
+            'lead' => $lead,
+            'products' => $products,
+        ];
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateCustomerRequest $request, Customer $customer)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Customer $customer)
-    {
-        //
+        return view('dashboard.customer.detail', $data);
     }
 }

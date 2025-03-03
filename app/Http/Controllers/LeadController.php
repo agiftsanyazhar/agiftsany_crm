@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lead;
-use App\Http\Requests\StoreLeadRequest;
-use App\Http\Requests\UpdateLeadRequest;
+use Exception;
+use Illuminate\Http\Request;
 
 class LeadController extends Controller
 {
@@ -13,54 +13,36 @@ class LeadController extends Controller
      */
     public function index()
     {
-        //
+        $leads = Lead::all();
+
+        $data = [
+            'title' => 'Leads',
+            'leads' => $leads,
+        ];
+
+        return view('dashboard.lead.index', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function updateStatus(Request $request, $id)
     {
-        //
-    }
+        try {
+            $lead = Lead::where('id', $id)->firstOrFail();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreLeadRequest $request)
-    {
-        //
-    }
+            $newStatus = $request->input('status');
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Lead $lead)
-    {
-        //
-    }
+            if (!in_array($newStatus, ['pending', 'approved', 'rejected'])) {
+                return redirect()->back()->with('error', 'Invalid status.');
+            }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Lead $lead)
-    {
-        //
-    }
+            $lead->update(['status' => $newStatus]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateLeadRequest $request, Lead $lead)
-    {
-        //
-    }
+            $status = 'success';
+            $message = 'Lead status successfully updated.';
+        } catch (Exception $e) {
+            $status = 'error';
+            $message = 'Failed to update status: ' . $e->getMessage();
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Lead $lead)
-    {
-        //
+        return redirect()->back()->with($status, $message);
     }
 }

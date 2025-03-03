@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use App\Http\Requests\StoreProductRequest;
-use App\Http\Requests\UpdateProductRequest;
+use Exception;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -13,54 +13,83 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $products = Product::all();
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $data = [
+            'title' => 'Products',
+            'products' => $products,
+        ];
+
+        return view('dashboard.product.index', $data);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreProductRequest $request)
+    public function store(Request $request)
     {
-        //
-    }
+        try {
+            $data = $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'required|string',
+                'price' => 'required|integer',
+            ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Product $product)
-    {
-        //
-    }
+            Product::create($data);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Product $product)
-    {
-        //
+            $status = 'success';
+            $message = 'Product successfully created.';
+        } catch (Exception $e) {
+            $status = 'error';
+            $message = 'Failed to create product: ' . $e->getMessage();
+        }
+
+        return redirect()->back()->with($status, $message);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProductRequest $request, Product $product)
+    public function update(Request $request)
     {
-        //
+        try {
+            $product = Product::findOrFail($request->id);
+
+            $data = $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'required|string',
+                'price' => 'required|integer',
+            ]);
+
+            $product->update($data);
+
+            $status = 'success';
+            $message = 'Product successfully updated.';
+        } catch (Exception $e) {
+            $status = 'error';
+            $message = 'Failed to update product: ' . $e->getMessage();
+        }
+
+        return redirect()->back()->with($status, $message);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy($id)
     {
-        //
+        try {
+            $product = Product::findOrFail($id);
+
+            $product->delete();
+
+            $status = 'success';
+            $message = 'Successfully deleted.';
+        } catch (Exception $e) {
+            $status = 'danger';
+            $message = 'Failed to delete: ' . $e->getMessage();
+        }
+
+        return redirect()->back()->with($status, $message);
     }
 }
